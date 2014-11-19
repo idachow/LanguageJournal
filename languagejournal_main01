@@ -1,0 +1,234 @@
+#################################
+# "Language Journal" By: Ida Chow
+#################################
+
+# switch to JSON, CSV
+
+# languagejournal_main:
+# main file for languagejournal
+
+from Tkinter import *
+import random
+import copy
+import time
+import csv
+from eventBasedAnimationClass import EventBasedAnimationClass
+
+
+import ctypes
+user32 = ctypes.windll.user32
+screensize = screenWidth, screenHeight = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+print screensize
+
+
+c = csv.writer(open("MYFILE.csv", "wb"))
+
+c.writerow(["Name","Address","Telephone","Fax","E-mail","Others"])
+
+
+class Vocab(object):
+	def __init__(self,word,definition,date):
+		self.word = word
+		self.definition = definition
+		self.date = date
+
+	def __str__(self):
+		return str(self.word) + ": " + str(self.definition) + ": " + str(self.date)
+
+	def saveAll(self):
+		f = open('save/vocab.txt', 'r+')
+		self.checkAndWrite(f,self.word)
+		f.close()
+		f = open("save/definition_text.txt", "a")
+		if self.exist == False:
+			f.write(self.definition + "\n")
+		f.close()
+		f = open("save/date.txt", "a")
+		if self.exist == False:
+			f.write(self.date + "\n")
+		f.close()
+
+	def checkAndWrite(self,f,item):
+		# checks file to see if existing vocabularly already exists
+		# if not, writes it to the file
+		self.exist = False
+		for line in f:
+			if line == item + "\n":
+				self.exist = True
+		if self.exist == False:
+			f.write(item + "\n")
+
+word1 = Vocab("cat","feline animal w four legs","test111")
+word2 = Vocab("namaste", "hello", "test222")
+word3 = Vocab("dog", "woof woof", "test333")
+word4 = Vocab("test", "test3", "test 444")
+# print word1
+# word1.saveAll()
+# word2.saveAll()
+# word3.saveAll()
+# word4.saveAll()
+
+
+class LanguageJournal(EventBasedAnimationClass):
+	def __init__(self,width,height):
+		self.timerDelay = None # in milliseconds (set to None to turn off timer)
+
+		self.width = width
+		self.height = height
+		self.cx = width/2
+		self.cy = height/2
+		self.currentWindow = 0
+
+
+		self.color_offwhite = "#D3D5CE"
+		self.color_lightteal = "#63DED1"
+		self.color_lightorange = "#F1AF8F"
+		self.color_darkergray = "#151513"
+
+
+	def Enter(self,event):
+		""" Someone Pressed Enter """
+		print "You entered >> %s" % (self.entrybox.get())
+	
+	def onMouseMotion(self, event):
+		pass
+
+	def onKeyPressed(self, event):
+		pass
+
+	def onMousePressed(self,event):
+		x,y = event.x, event.y
+		if self.currentWindow == 0:
+			if (self.cx-50 <= x <= self.cx+50) and (self.cy-50 <= y <= self.cx+50):
+				self.currentWindow = 1
+				self.window_newVocab()
+
+
+
+
+	def window_start(self):
+		cx, cy = self.cx, self.cy
+		self.canvas.create_text(cx,cy-(.25*self.height),text="Language Journal", font="Calibri 24 bold",fill=self.color_offwhite)
+		self.canvas.create_rectangle(cx+50,cy+50,cx-50,cy-50,fill=self.color_darkergray)
+		self.canvas.create_text(cx,cy,text="+",font="Calibri 36 bold",fill=self.color_lightteal)
+
+	def window_newVocab(self):
+		width = self.width
+		height = self.height
+		self.canvas.create_rectangle(0,0,width,height,fill="#2D2E27")
+		cx, cy = self.cx, self.cy
+		self.canvas.create_text(cx,cy,text="create new vocab",font="Calibri 36 bold",fill=self.color_lightteal)
+		
+		# self.sat = False
+		# using Tkinter's Entry widget ??????
+		def set_text():
+			fetche = e.get()
+			fetche2 = e2.get()
+			# print str(fetche),str(fetche2)
+			date = time.strftime("%x")
+			print date
+			self.newWord = Vocab(str(fetche),str(fetche2),date)
+			e.delete(0,END)
+			e2.delete(0,END)
+			# print self.newWord
+			self.newWord.saveAll()
+			return
+		e = Entry(self.root,width=40)
+		e2 = Entry(self.root, width=100)
+		e.pack()
+		e2.pack()
+		b1 = Button(self.root,text="save",command=lambda:set_text())
+		b1.pack()
+		# print self.sat
+		# if self.sat == True:
+
+		# self.canvas.create_window(window = e1, x = 50, y = 50)
+
+		#########################
+		# e1 = Entry(canvas)
+		# canvas.create_window(window = e1, x = 50, y = 50)
+
+		#########################		
+		# L1 = Label(self.root, text="User Name")
+		# L1.pack( side = LEFT)
+		# E1 = Entry(top, bd =5)
+
+		# E1.pack(side = RIGHT)
+
+		# top.mainloop()
+
+
+
+	def redrawAll(self):
+		if self.currentWindow == 0:
+			width = self.width
+			height = self.height
+			self.canvas.create_rectangle(0,0,width,height,fill="#2D2E27")
+			self.selectCurrentWindow()
+
+
+
+	def selectCurrentWindow(self):
+		if (self.currentWindow == 0):
+			self.window_start()
+		elif (self.currentWindow == 1):
+			self.window_newVocab()
+		else: pass
+
+	def initAnimation(self):
+		self.root.bind("<Button-1>", lambda event: self.onMousePressed(event))
+
+# master = Tk()
+
+# e = Entry(master)
+# e.pack()
+
+# e.focus_set()
+
+
+#### testing "Entry"
+
+
+# fields = 'Last Name', 'First Name', 'Job', 'Country'
+
+# def fetch(entries):
+#    for entry in entries:
+#       field = entry[0]
+#       text  = entry[1].get()
+#       print('%s: "%s"' % (field, text)) 
+
+# def makeform(root, fields):
+#    entries = []
+#    for field in fields:
+#       row = Frame(root)
+#       lab = Label(row, width=15, text=field, anchor='w')
+#       ent = Entry(row)
+#       row.pack(side=TOP, fill=X, padx=5, pady=5)
+#       lab.pack(side=LEFT)
+#       ent.pack(side=RIGHT, expand=YES, fill=X)
+#       entries.append((field, ent))
+#    return entries
+
+# if __name__ == '__main__':
+#    root = Tk()
+#    ents = makeform(root, fields)
+#    root.bind('<Return>', (lambda event, e=ents: fetch(e)))   
+#    b1 = Button(root, text='Show',
+#           command=(lambda e=ents: fetch(e)))
+#    b1.pack(side=LEFT, padx=5, pady=5)
+#    b2 = Button(root, text='Quit', command=root.quit)
+#    b2.pack(side=LEFT, padx=5, pady=5)
+#    root.mainloop()
+
+myapp = LanguageJournal(.85*screenWidth,.45*screenHeight-50)
+
+# myapp.run()
+
+
+
+############ mp3 testing 
+
+# import winsound
+
+# winsound.Beep(3000, 1000)
+# winsound.PlaySound('ocean_nobirds.mp3', winsound.SND_FILENAME)

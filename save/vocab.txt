@@ -1,0 +1,5 @@
+cat
+test
+2014
+vocab2
+als
