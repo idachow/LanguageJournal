@@ -8,6 +8,9 @@ import random
 import copy
 import time
 import csv
+import pyaudio
+import wave
+import sys
 from eventBasedAnimationClass import EventBasedAnimationClass
 
 from vocab import Vocab
@@ -20,6 +23,8 @@ class Window(object):
 		self.cx = cx
 		self.cy = cy
 		self.root = root
+
+		self.audiostring = 0
 
 		self.color_offwhite = "#D3D5CE"
 		self.color_lightteal = "#63DED1"
@@ -57,6 +62,24 @@ class Window(object):
 		self.button_start_view()
 		self.button_start_plus()
 
+
+	def screen_viewVocab_dataToGrid(self):
+		with open('data.csv', 'rb') as csvfile:
+			filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+			r = 0
+			for row in filereader:
+				Label(self.frameScroller,text=r+1).grid(row=r,column=0)
+				Label(self.frameScroller,text=row[0]).grid(row=r,column=1)
+				Label(self.frameScroller,text=row[1]).grid(row=r,column=2)
+				Label(self.frameScroller,text=row[2]).grid(row=r,column=3)
+				Label(self.frameScroller,text=row[1]+".wav").grid(row=r,column=4)
+				self.lastadded = row[1]
+				r += 1
+
+	def screen_viewVocab_scroller(self,event):
+		cx, cy = self.cx, self.cy
+		self.canvasScroller.configure(scrollregion=self.canvasScroller.bbox("all"),width=cx,height=cy)
+
 	def screen_viewVocab(self):
 		width = self.width
 		height = self.height
@@ -64,19 +87,83 @@ class Window(object):
 		self.button_all_back()
 		cx, cy = self.cx, self.cy
 
-		r = 0	
-		with open('data.csv', 'rb') as csvfile:
-			filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
-			# for row in spamreader:
-			for row in filereader:
-				rowtext = ""
-				r += 1
-				for col in xrange(3):
-					rowtext += row[col]
-					rowtext += " | "
-				self.canvas.create_text(cx,(height/10)*r+cy/2,text=rowtext,fill=self.color_offwhite)
+		# adapted from http://stackoverflow.com/questions/16188420/python-tkinter-scrollbar-for-frame
+		self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
+		self.myframe.place(x=cx-cx/2,y=cy-cy/2)
 
-	
+		self.canvasScroller=Canvas(self.myframe)
+		self.frameScroller=Frame(self.canvasScroller)
+		self.myscrollbar=Scrollbar(self.myframe,orient="vertical",command=self.canvasScroller.yview)
+		self.canvasScroller.configure(yscrollcommand=self.myscrollbar.set)
+
+		self.myscrollbar.pack(side="right",fill="y")
+		self.canvasScroller.pack(side="left")
+		self.canvasScroller.create_window((0,0),window=self.frameScroller,anchor='nw')
+		self.frameScroller.bind("<Configure>",self.screen_viewVocab_scroller)
+		self.screen_viewVocab_dataToGrid()
+
+	def set_audio(self):
+		# adapted from pyaudio documentation
+		CHUNK = 1024
+		FORMAT = pyaudio.paInt16
+		CHANNELS = 2
+		RATE = 44100
+		RECORD_SECONDS = 5
+		WAVE_OUTPUT_FILENAME = self.lastadded + ".wav"
+
+		p = pyaudio.PyAudio()
+
+		stream = p.open(format=FORMAT,
+						channels=CHANNELS,
+						rate=RATE,
+						input=True,
+						frames_per_buffer=CHUNK)
+
+		print("* recording")
+
+		frames = []
+
+		for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+			data = stream.read(CHUNK)
+			frames.append(data)
+
+		print("* done recording")
+
+		stream.stop_stream()
+		stream.close()
+		p.terminate()
+
+		wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+		wf.setnchannels(CHANNELS)
+		wf.setsampwidth(p.get_sample_size(FORMAT))
+		wf.setframerate(RATE)
+		wf.writeframes(b''.join(frames))
+		wf.close()
+
+
+	def playAudio(self):
+		CHUNK = 1024
+
+		print self.lastadded+".wav"
+		wf = wave.open(self.lastadded+".wav", 'rb')
+
+		p = pyaudio.PyAudio()
+
+		stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+						channels=wf.getnchannels(),
+						rate=wf.getframerate(),
+						output=True)
+
+		data = wf.readframes(CHUNK)
+
+		while data != '':
+			stream.write(data)
+			data = wf.readframes(CHUNK)
+
+		stream.stop_stream()
+		stream.close()
+
+		p.terminate()
 
 	def screen_newVocab(self):
 		width = self.width
@@ -85,23 +172,53 @@ class Window(object):
 		self.button_all_back()
 
 		cx, cy = self.cx, self.cy
-		self.canvas.create_text(cx,cy,text="create new vocab",font="Calibri 36 bold",fill=self.color_lightteal)
+		self.canvas.create_text(cx,50,text="create new vocab",font="Calibri 36 bold",fill=self.color_lightteal)
 		def set_text():
-			fetche = e.get()
-			fetche2 = e2.get()
+			fetche = self.e.get()
+			fetche2 = self.e2.get()
 			# print str(fetche),str(fetche2)
 			date = time.strftime("%x")
 			print date
 			self.newWord = Vocab(str(fetche),str(fetche2),date)
-			e.delete(0,END)
-			e2.delete(0,END)
+			self.e.delete(0,END)
+			self.e2.delete(0,END)
 			# print self.newWord
 			self.newWord.saveAll()
+
+			with open('data.csv', 'rb') as csvfile:
+				filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+				r = 0
+				for row in filereader:
+					self.lastadded = row[1]
 			return
-		e = Entry(self.root,width=40)
-		e2 = Entry(self.root, width=100)
-		e.pack()
-		e2.pack()
-		b1 = Button(self.root,text="save",command=lambda:set_text())
-		b1.pack()
-		
+
+		# frame for vocab entry
+		self.canvas.create_text(cx-cx/2,cy-175,text="Vocabulary Term:", fill="white", anchor="w")
+		self.frame_entryvocab=Frame(self.root,relief=GROOVE,width=0,height=0,bd=1)
+		self.frame_entryvocab.place(x=cx-cx/2,y=cy-150)
+		# frame for defintionb
+		self.canvas.create_text(cx-cx/2,cy-100,text="Definition:",fill="white",anchor="w")
+		self.frame_entrydefinition=Frame(self.root,relief=GROOVE,width=0,height=0,bd=1)
+		self.frame_entrydefinition.place(x=cx-cx/2,y=cy-75)
+		# frame for save
+		self.frame_entrysave=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		self.frame_entrysave.place(x=cx-cx/2,y=cy)
+		# frame for record
+		self.frame_audiosave=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		self.frame_audiosave.place(x=cx-cx/2,y=cy+30)
+		# frame for play
+		self.frame_audioplay=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		self.frame_audioplay.place(x=cx,y=cy+30)
+
+
+		# NEW FRAME INCLUDES:
+		self.e = Entry(self.frame_entryvocab,width=40)
+		self.e2 = Entry(self.frame_entrydefinition, width=100)
+		self.e.pack()
+		self.e2.pack()
+		self.b1 = Button(self.frame_entrysave,text="save",command=lambda:set_text())
+		self.b2 = Button(self.frame_audiosave,text="record audio",command=lambda:self.set_audio())
+		self.b3 = Button(self.frame_audioplay,text="play recorded audio", command=lambda:self.playAudio())
+		self.b1.pack()
+		self.b2.pack()
+		self.b3.pack()

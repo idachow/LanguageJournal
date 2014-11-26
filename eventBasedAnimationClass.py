@@ -18,9 +18,6 @@ class EventBasedAnimationClass(object):
         self.onMousePressed(event)
         self.redrawAll()
 
-    def onMouseMotionWrapper(self,event):
-    	self.onMouseMotion(event)
-    	self.redrawAll()
 
     def onKeyPressedWrapper(self, event):
         self.onKeyPressed(event)
@@ -47,7 +44,6 @@ class EventBasedAnimationClass(object):
         def f(event): self.onMousePressedWrapper(event)    
         self.root.bind("<Button-1>", f)
 
-        self.root.bind("<Motion>", lambda event: self.onMouseMotionWrapper(event))
         # DK: Or you can just use an anonymous lamdba function, like this:
         self.root.bind("<Key>", lambda event: self.onKeyPressedWrapper(event))
         self.onTimerFiredWrapper()
