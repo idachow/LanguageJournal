@@ -67,7 +67,10 @@ class LanguageJournal(EventBasedAnimationClass):
 				self.currentWindow = 2
 				self.window.screen_viewVocab()
 		if self.currentWindow == 1 or self.currentWindow == 2:
-			if (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
+			# select cell of listbox for CXV file
+			if self.currentWindow == 2 and self.window.lb.curselection() != ():
+				self.window.screen_viewVocab_displayVocab()
+			elif (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
 				if self.currentWindow == 1:
 					self.window.frame_entryvocab.destroy()
 					self.window.frame_entrydefinition.destroy()

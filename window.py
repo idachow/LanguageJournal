@@ -30,6 +30,7 @@ class Window(object):
 		self.color_lightteal = "#63DED1"
 		self.color_lightorange = "#F1AF8F"
 		self.color_darkergray = "#151513"
+		self.color_bggray = "#2D2E27"
 
 
 	def button_all_back(self): 
@@ -67,18 +68,44 @@ class Window(object):
 		with open('data.csv', 'rb') as csvfile:
 			filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
 			r = 0
-			for row in filereader:
-				Label(self.frameScroller,text=r+1).grid(row=r,column=0)
-				Label(self.frameScroller,text=row[0]).grid(row=r,column=1)
-				Label(self.frameScroller,text=row[1]).grid(row=r,column=2)
-				Label(self.frameScroller,text=row[2]).grid(row=r,column=3)
-				Label(self.frameScroller,text=row[1]+".wav").grid(row=r,column=4)
-				self.lastadded = row[1]
+			for row in filereader: 
 				r += 1
+		with open('data.csv', 'rb') as csvfile:	
+			filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+			self.lb = Listbox(self.frameScroller, height=r)
+			self.lb.pack()
+			for row in filereader:
+				self.lb.insert(END,row[1])
+				# Label(self.frameScroller,text=r+1).grid(row=r,column=0)
+				# Label(self.frameScroller,text=row[0]).grid(row=r,column=1)
+				# Label(self.frameScroller,text=row[1]).grid(row=r,column=2)
+				# Label(self.frameScroller,text=row[2]).grid(row=r,column=3)
+				# Label(self.frameScroller,text=row[1]+".wav").grid(row=r,column=4)
+				# self.lastadded = row[1]
+				# r += 1
 
 	def screen_viewVocab_scroller(self,event):
 		cx, cy = self.cx, self.cy
-		self.canvasScroller.configure(scrollregion=self.canvasScroller.bbox("all"),width=cx,height=cy)
+		self.canvasScroller.configure(scrollregion=self.canvasScroller.bbox("all"),width=125,height=cy)
+
+
+	def screen_viewVocab_displayVocab(self):
+		cx, cy = self.cx, self.cy
+		save = self.lb.curselection()
+		voc = save[0]
+		self.canvas.create_rectangle(cx-25,cy-cy/2-20,self.width,self.height,
+									fill=self.color_bggray,outline=self.color_bggray)
+		with open('data.csv', 'rb') as csvfile:
+			r = 0
+			filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+			for row in filereader:
+				if r == voc:
+					self.canvas.create_text(cx,cy-cy/2,text=row[1],font="Calibri 24 bold",
+								fill=self.color_offwhite,anchor="w")
+					self.canvas.create_text(cx,cy-cy/2+50,text=row[2],font="Calibri 16",
+								fill=self.color_offwhite,anchor="w")
+				r += 1
+
 
 	def screen_viewVocab(self):
 		width = self.width
@@ -86,9 +113,12 @@ class Window(object):
 		self.canvas.create_rectangle(0,0,width,height,fill="#2D2E27")
 		self.button_all_back()
 		cx, cy = self.cx, self.cy
+		self.canvas.create_text(cx,50,text="view all vocab",font="Calibri 36 bold",
+								fill=self.color_lightteal)
+	
 
 		# adapted from http://stackoverflow.com/questions/16188420/python-tkinter-scrollbar-for-frame
-		self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
+		self.myframe=Frame(self.root,relief=GROOVE,width=25,height=100,bd=1)
 		self.myframe.place(x=cx-cx/2,y=cy-cy/2)
 
 		self.canvasScroller=Canvas(self.myframe)
@@ -101,6 +131,9 @@ class Window(object):
 		self.canvasScroller.create_window((0,0),window=self.frameScroller,anchor='nw')
 		self.frameScroller.bind("<Configure>",self.screen_viewVocab_scroller)
 		self.screen_viewVocab_dataToGrid()
+
+
+
 
 	def set_audio(self):
 		# adapted from pyaudio documentation
@@ -168,7 +201,7 @@ class Window(object):
 	def screen_newVocab(self):
 		width = self.width
 		height = self.height
-		self.canvas.create_rectangle(0,0,width,height,fill="#2D2E27")
+		self.canvas.create_rectangle(0,0,width,height,fill=self.color_bggray)
 		self.button_all_back()
 
 		cx, cy = self.cx, self.cy
