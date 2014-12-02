@@ -56,21 +56,20 @@ class LanguageJournal(EventBasedAnimationClass):
 			f.close()
 
 	def onMousePressed(self,event):
-		x,y = event.x, event.y
+		x,y = event.x_root, event.y_root
+		print x,y
 		backcoord = self.height/20
 		if self.currentWindow == 0:
 			if (self.cx+10 <= x <= self.cx+110) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 1
-				self.window.screen_newVocab()
+				self.window.screen_newVocab() 
 				# winsound.Beep(3000, 1000)
 			elif (self.cx-110 <= x <= self.cx-10) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 2
 				self.window.screen_viewVocab()
 		if self.currentWindow == 1 or self.currentWindow == 2:
-			# select cell of listbox for CXV file
-			if self.currentWindow == 2 and self.window.lb.curselection() != ():
-				self.window.screen_viewVocab_displayVocab()
-			elif (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
+			# select cell of listbox for CSV file
+			if (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
 				if self.currentWindow == 1:
 					self.window.frame_entryvocab.destroy()
 					self.window.frame_entrydefinition.destroy()
@@ -78,9 +77,14 @@ class LanguageJournal(EventBasedAnimationClass):
 					self.window.frame_audiosave.destroy()
 					self.window.frame_audioplay.destroy()
 				if self.currentWindow == 2:
-					self.window.canvasScroller.destroy()
+					if self.window.lb.curselection() != ():
+						self.window.b5.destroy()
+						self.window.frame_displayaudioplay.destroy()
 					self.window.myframe.destroy()
+					self.window.canvasScroller.destroy()
 				self.currentWindow = 0
+			elif self.currentWindow == 2 and self.window.lb.curselection() != ():
+				self.window.screen_viewVocab_displayVocab()
 
 	def redrawAll(self):
 		if self.currentWindow == 0:
@@ -100,7 +104,7 @@ class LanguageJournal(EventBasedAnimationClass):
 
 	def initAnimation(self):
 
-		self.root.bind("<Button-1>", lambda event: self.onMousePressed(event))
+		self.canvas.bind("<Button-1>", lambda event: self.onMousePressed(event))
 		self.window = Window(self.canvas,self.width, self.height,self.cx,self.cy,self.root)
 
 		self.redrawAll()

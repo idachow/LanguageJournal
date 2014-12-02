@@ -1,0 +1,30 @@
+File parsing: 
+Switched from text files to CSV files, and am able to extract individual pieces of data saved into them.
+
+File separation:
+Originally, all code was in one document. Currently, the two main classes "window" and "vocab" are split into separate files, which helps with ease of editing and writing more code. 
+
+UI:
+In the first deliverable, the application was just one "screen" that consisted of drawing rectangles over the screen. Currently, the usage of frames (and being able to remove them when not activated) has helped with managing different "windows". 
+
+"Vocabulary Review":
+With parsing, viewing all vocabulary terms saved shows up in the "show all" window. This itself is also in its own scrollable frame separate from the original canvas.
+
+"Vocabulary Input":
+Input is changed in that it's not isolated from the canvas (before it was just attached to the bottom of the canvas as completely separate from the root). With frames, each of the entry boxes/buttons are all in their own frame, placed accordingly on the canvas.
+
+Audio functionality:
+Played around with a couple different modules, deciding on pyaudio. Works well in creating and playing .wav files with reasonable flexibility. Added buttons to record (& replay) audio files. 
+
+---------------------------------------
+
+GOALS FOR FINAL WEEK OF WORK:
+-- Adding ability to edit vocabulary
+-- Adding ability to add a reference image for vocab
+-- Adding "calendar view" feature, sorting vocab into that view
+-- Adding ability to "prioritize" specific vocabulary and view specific "priorites"
+
+STRETCH GOALS:
+-- Looking into possible algorithms that would help with the actual teaching of vocabulary
+-- Search functionality
+-- Image addition from URL

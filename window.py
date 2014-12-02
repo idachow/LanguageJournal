@@ -11,6 +11,7 @@ import csv
 import pyaudio
 import wave
 import sys
+import winsound
 from eventBasedAnimationClass import EventBasedAnimationClass
 
 from vocab import Vocab
@@ -76,13 +77,7 @@ class Window(object):
 			self.lb.pack()
 			for row in filereader:
 				self.lb.insert(END,row[1])
-				# Label(self.frameScroller,text=r+1).grid(row=r,column=0)
-				# Label(self.frameScroller,text=row[0]).grid(row=r,column=1)
-				# Label(self.frameScroller,text=row[1]).grid(row=r,column=2)
-				# Label(self.frameScroller,text=row[2]).grid(row=r,column=3)
-				# Label(self.frameScroller,text=row[1]+".wav").grid(row=r,column=4)
-				# self.lastadded = row[1]
-				# r += 1
+		return
 
 	def screen_viewVocab_scroller(self,event):
 		cx, cy = self.cx, self.cy
@@ -95,16 +90,37 @@ class Window(object):
 		voc = save[0]
 		self.canvas.create_rectangle(cx-25,cy-cy/2-20,self.width,self.height,
 									fill=self.color_bggray,outline=self.color_bggray)
-		with open('data.csv', 'rb') as csvfile:
-			r = 0
-			filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
-			for row in filereader:
-				if r == voc:
-					self.canvas.create_text(cx,cy-cy/2,text=row[1],font="Calibri 24 bold",
-								fill=self.color_offwhite,anchor="w")
-					self.canvas.create_text(cx,cy-cy/2+50,text=row[2],font="Calibri 16",
-								fill=self.color_offwhite,anchor="w")
-				r += 1
+
+		def displayVoc():
+			with open('data.csv', 'rb') as csvfile:
+				r = 0
+				filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+				for row in filereader:
+					if r == voc:
+						self.filename = row[1]
+						self.canvas.create_text(cx,cy-cy/2,text=self.filename,font="Calibri 24 bold",
+									fill=self.color_offwhite,anchor="w")
+						self.canvas.create_text(cx,cy-cy/2+50,text=row[2],font="Calibri 16",
+									fill=self.color_offwhite,anchor="w")
+					r += 1
+			return
+
+		displayVoc()
+
+		self.frame_displayaudioplay=Frame(self.canvas,relief=GROOVE,width=0,height=0,bd=0)
+		self.frame_displayaudioplay.place(x=cx,y=cy+50)
+		self.b5 = Button(self.frame_displayaudioplay,text="Play Recorded Audio", command=lambda:self.interPlayAudio())
+		self.b5.pack()
+		# winsound.Beep(1000, 1000)
+
+		# self.frame_audioplay=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		# self.frame_audioplay.place(x=cx,y=cy+30)
+		# self.b3 = Button(self.frame_audioplay,text="play recorded audio", command=lambda:self.playAudio(self.lastadded))
+		# self.b3.pack()
+
+	def interPlayAudio(self):
+		# winsound.Beep(1000, 1000)
+		self.playAudio(self.filename)
 
 
 	def screen_viewVocab(self):
@@ -142,7 +158,7 @@ class Window(object):
 		CHANNELS = 2
 		RATE = 44100
 		RECORD_SECONDS = 5
-		WAVE_OUTPUT_FILENAME = self.lastadded + ".wav"
+		WAVE_OUTPUT_FILENAME = "audio/" + self.lastadded + ".wav"
 
 		p = pyaudio.PyAudio()
 
@@ -174,11 +190,11 @@ class Window(object):
 		wf.close()
 
 
-	def playAudio(self):
+	def playAudio(self,wavfile):
 		CHUNK = 1024
 
-		print self.lastadded+".wav"
-		wf = wave.open(self.lastadded+".wav", 'rb')
+		print "play: ", wavfile+".wav"
+		wf = wave.open("audio/" + wavfile +".wav", 'rb')
 
 		p = pyaudio.PyAudio()
 
@@ -251,7 +267,7 @@ class Window(object):
 		self.e2.pack()
 		self.b1 = Button(self.frame_entrysave,text="save",command=lambda:set_text())
 		self.b2 = Button(self.frame_audiosave,text="record audio",command=lambda:self.set_audio())
-		self.b3 = Button(self.frame_audioplay,text="play recorded audio", command=lambda:self.playAudio())
+		self.b3 = Button(self.frame_audioplay,text="play recorded audio", command=lambda:self.playAudio(self.lastadded))
 		self.b1.pack()
 		self.b2.pack()
 		self.b3.pack()
