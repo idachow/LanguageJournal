@@ -11,6 +11,7 @@ import csv
 import pyaudio
 import wave
 import sys
+import os
 import winsound
 from eventBasedAnimationClass import EventBasedAnimationClass
 
@@ -25,7 +26,9 @@ class Window(object):
 		self.cy = cy
 		self.root = root
 
+		self.edit = False
 		self.audiostring = 0
+		self.displayEditScreen = False
 
 		self.color_offwhite = "#D3D5CE"
 		self.color_lightteal = "#63DED1"
@@ -85,11 +88,20 @@ class Window(object):
 
 
 	def screen_viewVocab_displayVocab(self):
+		if self.displayEditScreen == True:
+			self.frame_editTermSave.destroy()
+			self.frame_editTerm.destroy()
+
+		self.displayEditScreen = False
+
 		cx, cy = self.cx, self.cy
 		save = self.lb.curselection()
 		voc = save[0]
 		self.canvas.create_rectangle(cx-25,cy-cy/2-20,self.width,self.height,
 									fill=self.color_bggray,outline=self.color_bggray)
+		#title
+		self.canvas.create_text(cx,50,text="view all entries",font="Calibri 36 bold",
+								fill=self.color_lightteal)
 
 		def displayVoc():
 			with open('data.csv', 'rb') as csvfile:
@@ -98,6 +110,9 @@ class Window(object):
 				for row in filereader:
 					if r == voc:
 						self.filename = row[1]
+						self.filerow = r
+						self.filedef = row[2]
+						self.filedate = row[0]
 						self.canvas.create_text(cx,cy-cy/2,text=self.filename,font="Calibri 24 bold",
 									fill=self.color_offwhite,anchor="w")
 						self.canvas.create_text(cx,cy-cy/2+50,text=row[2],font="Calibri 16",
@@ -107,16 +122,22 @@ class Window(object):
 
 		displayVoc()
 
+
 		self.frame_displayaudioplay=Frame(self.canvas,relief=GROOVE,width=0,height=0,bd=0)
-		self.frame_displayaudioplay.place(x=cx,y=cy+50)
+		self.frame_displayaudioplay.place(x=cx,y=cy)
 		self.b5 = Button(self.frame_displayaudioplay,text="Play Recorded Audio", command=lambda:self.interPlayAudio())
 		self.b5.pack()
+		self.frame_displayeditvoc=Frame(self.canvas,relief=GROOVE,width=0,height=0,bd=0)
+		self.frame_displayeditvoc.place(x=cx,y=cy+50)
+		self.b6 = Button(self.frame_displayeditvoc,text="EDIT VOCABULARY", command=lambda:self.screen_editVocab())
+		self.b6.pack()
 		# winsound.Beep(1000, 1000)
 
 		# self.frame_audioplay=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
 		# self.frame_audioplay.place(x=cx,y=cy+30)
 		# self.b3 = Button(self.frame_audioplay,text="play recorded audio", command=lambda:self.playAudio(self.lastadded))
 		# self.b3.pack()
+
 
 	def interPlayAudio(self):
 		# winsound.Beep(1000, 1000)
@@ -129,7 +150,7 @@ class Window(object):
 		self.canvas.create_rectangle(0,0,width,height,fill="#2D2E27")
 		self.button_all_back()
 		cx, cy = self.cx, self.cy
-		self.canvas.create_text(cx,50,text="view all vocab",font="Calibri 36 bold",
+		self.canvas.create_text(cx,50,text="view all entries",font="Calibri 36 bold",
 								fill=self.color_lightteal)
 	
 
@@ -147,6 +168,70 @@ class Window(object):
 		self.canvasScroller.create_window((0,0),window=self.frameScroller,anchor='nw')
 		self.frameScroller.bind("<Configure>",self.screen_viewVocab_scroller)
 		self.screen_viewVocab_dataToGrid()
+
+
+
+	def screen_editVocab(self):
+		self.edit = True
+		width = self.width
+		height = self.height
+		cx,cy = self.cx, self.cy
+		# clear out previous display vocab frames
+		if self.edit == True:
+			self.b5.destroy()
+			self.b6.destroy()
+			self.frame_displayeditvoc.destroy()
+			self.frame_displayaudioplay.destroy()
+		# place in back button
+		self.button_all_back()
+		self.canvas.create_rectangle(cx-25,cy-cy/2-20,self.width,self.height,
+									fill=self.color_bggray,outline=self.color_bggray)
+		# title
+		# self.canvas.create_text(cx,50,text="view all vocab",font="Calibri 36 bold",
+		# 						fill=self.color_lightteal)
+		# editing text
+		self.canvas.create_text(cx,cy-cy/2,text="Editing:",font="Calibri 24 bold",
+									fill=self.color_offwhite,anchor="w")
+		self.canvas.create_text(cx,cy-cy/2+50,text="'" + self.filename + "'",font="Calibri 24 bold",
+									fill=self.color_lightorange,anchor="w")
+
+
+
+		def edit_text():
+			# index = indexOfEdit
+			fetche = self.eEditTerm.get()
+			# print str(fetche),str(fetche2)
+			# determine what is edited
+			# save into CSV
+			self.eEditTerm.delete(0,END)
+			# print self.newWord
+			self.editedWord = Vocab(str(fetche), " ", " ")
+			self.editedWord.edit(fetche,self.filerow,self.filedate,self.filedef,self.filename)
+
+		# frame for vocab entry
+		self.canvas.create_text(cx,cy-100,text="Change Vocabulary Term:", fill="white", anchor="w")
+		self.frame_editTerm=Frame(self.root,relief=GROOVE,width=0,height=0,bd=1)
+		self.frame_editTerm.place(x=cx,y=cy-50)
+		# frame for save
+		self.frame_editTermSave=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		self.frame_editTermSave.place(x=cx+200,y=cy)
+		# # frame for record
+		# self.frame_audiosave=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		# self.frame_audiosave.place(x=cx-cx/2,y=cy+30)
+		# # frame for play
+		# self.frame_audioplay=Frame(self.root,relief=GROOVE,width=0,height=0,bd=0)
+		# self.frame_audioplay.place(x=cx,y=cy+30)
+
+
+		# frame for entry for vocab term
+		self.eEditTerm = Entry(self.frame_editTerm,width=40)
+		# self.e2 = Entry(self.frame_entrydefinition, width=100)
+		self.eEditTerm.pack()
+		# self.e2.pack()
+		self.bSaveTerm = Button(self.frame_editTermSave,text="save",command=lambda:edit_text())
+		self.bSaveTerm.pack()
+
+		self.displayEditScreen = True
 
 
 

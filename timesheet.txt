@@ -26,10 +26,17 @@ Total	== 14.5 (W2)
 11/30	-- (.5 hr): Additional audio debugging on view all page
 12/11	-- (1 hr): Still debugging audio
 		-- (1 hr): Debugging destroying frames
-12/2 	-- (??hr): Adding edit feature
-Total	== 7.5 (W3)
+12/2 	-- (3 hr): Adding edit feature 
+		-- (1 hr): Allowing for rewrite of .wav files with editing vocab
+		-- (? 5hr): Add calendar feature/list by date
+12/3 	-- (? 4hr): Add star feature/list by priority
+		-- (? 3hr): DEBUG YO
+12/4 	-- (? 2hr): More debug yo
+					?? add view last week's words
 
-FULL TOTAL: 29.5 hr ... 37
+Total	== 10.5 (W3)
+
+FULL TOTAL: 29.5 hr ... 40
 
 Goal: 35 by dinner
 --- 3 hrs after
@@ -39,3 +46,15 @@ Sunday: 7 hrs -- 45
 Monday: 5 hrs 50
 Tuesday: 5 hrs? - 55
 Wednesday: 5 hrs final touches - 60 hrs
+
+
+
+
+
+
+
+
+
+
+-- UI minimalistic but ok
+-- ??? can't access things

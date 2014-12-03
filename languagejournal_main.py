@@ -40,6 +40,10 @@ class LanguageJournal(EventBasedAnimationClass):
 		self.cy = height/2
 		self.currentWindow = 0
 
+		self.mouse = 0
+
+
+
 
 	def Enter(self,event):
 		""" Someone Pressed Enter """
@@ -56,10 +60,15 @@ class LanguageJournal(EventBasedAnimationClass):
 			f.close()
 
 	def onMousePressed(self,event):
+		self.mouse += 1
+		print self.mouse
 		x,y = event.x_root, event.y_root
-		print x,y
+		cx, cy = self.cx, self.cy
+		height,width = self.height,self.width
+		# print x,y, 
 		backcoord = self.height/20
 		if self.currentWindow == 0:
+			print "a"
 			if (self.cx+10 <= x <= self.cx+110) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 1
 				self.window.screen_newVocab() 
@@ -67,32 +76,68 @@ class LanguageJournal(EventBasedAnimationClass):
 			elif (self.cx-110 <= x <= self.cx-10) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 2
 				self.window.screen_viewVocab()
-		if self.currentWindow == 1 or self.currentWindow == 2:
-			# select cell of listbox for CSV file
-			if (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
-				if self.currentWindow == 1:
-					self.window.frame_entryvocab.destroy()
-					self.window.frame_entrydefinition.destroy()
-					self.window.frame_entrysave.destroy()
-					self.window.frame_audiosave.destroy()
-					self.window.frame_audioplay.destroy()
-				if self.currentWindow == 2:
-					if self.window.lb.curselection() != ():
-						self.window.b5.destroy()
-						self.window.frame_displayaudioplay.destroy()
-					self.window.myframe.destroy()
-					self.window.canvasScroller.destroy()
+
+		elif (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
+			print "b"
+			if self.currentWindow == 1:
+				self.window.frame_entryvocab.destroy()
+				self.window.frame_entrydefinition.destroy()
+				self.window.frame_entrysave.destroy()
+				self.window.frame_audiosave.destroy()
+				self.window.frame_audioplay.destroy()
 				self.currentWindow = 0
-			elif self.currentWindow == 2 and self.window.lb.curselection() != ():
-				self.window.screen_viewVocab_displayVocab()
+			elif self.currentWindow == 2:
+				# if self.window.lb.curselection() != ():
+				# self.window.b5.destroy()
+				if self.window.displayEditScreen == True:
+					print "???"
+					# temp cover
+					self.window.frame_editTermSave.destroy()
+					self.window.frame_editTerm.destroy()
+					self.currentWindow = 2
+					self.window.displayEditScreen = False
+					# self.window.frame_displayeditvoc.destroy()
+					# self.window.frame_displayaudioplay.destroy()
+				if self.window.lb.curselection() != () and self.window.displayEditScreen == False:
+					print "ddd"
+					self.window.frame_displayeditvoc.destroy()
+					self.window.frame_displayaudioplay.destroy()
+				# self.window.b6.destroy()
+				# whole frame
+				self.currentWindow = 0
+				self.window.myframe.destroy()
+				self.window.canvasScroller.destroy()
+		
+		elif self.window.displayEditScreen == True:
+			self.window.frame_displayeditvoc.destroy()
+			self.window.frame_displayaudioplay.destroy()
+		
+		elif self.currentWindow == 2 and self.window.lb.curselection() != ():
+			print "c"
+			self.base()
+			self.window.button_all_back()
+			self.window.screen_viewVocab_displayVocab()
+			self.oldSelection = self.window.lb.curselection()
+
+
+		if self.currentWindow == 0:
+			self.base()
+			self.window.screen_start()
+
+		print "currentWindow", self.currentWindow
+
+
+	def base(self):
+		width,height = self.width,self.height
+		self.canvas.create_rectangle(0,0,width,height,fill=self.window.color_bggray)
 
 	def redrawAll(self):
+
 		if self.currentWindow == 0:
 			width = self.width
 			height = self.height
 			self.canvas.create_rectangle(0,0,width,height,fill="#2D2E27")
 			self.selectCurrentWindow()
-
 
 
 	def selectCurrentWindow(self):

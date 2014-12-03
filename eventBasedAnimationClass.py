@@ -41,8 +41,8 @@ class EventBasedAnimationClass(object):
         # set up events
         # DK: You can use a local function with a closure
         # to store the canvas binding, like this:
-        def f(event): self.onMousePressedWrapper(event)    
-        self.root.bind("<Button-1>", f)
+        # def f(event): self.onMousePressedWrapper(event)    
+        # self.root.bind("<Button-1>", f)
 
         # DK: Or you can just use an anonymous lamdba function, like this:
         self.root.bind("<Key>", lambda event: self.onKeyPressedWrapper(event))

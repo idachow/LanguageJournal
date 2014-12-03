@@ -8,7 +8,18 @@ import random
 import copy
 import time
 import csv
+import winsound
+import pyaudio
+import sys
+import os
 from eventBasedAnimationClass import EventBasedAnimationClass
+
+
+## det window size
+import ctypes
+user32 = ctypes.windll.user32
+screensize = screenWidth, screenHeight = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+print screensize
 
 class Vocab(object):
 	def __init__(self,word,definition,date):
@@ -32,3 +43,29 @@ class Vocab(object):
 				self.exist = True
 		if self.exist == False:
 			f.write(item)
+
+	def edit(self,entry,indexOfEdit,date,definition,originalName):
+		print "entry: ", entry, "| index of edit: ", indexOfEdit
+
+		def editVocab():
+			vocab_list = []
+
+			# Read all data from the csv file.
+			with open('data.csv', 'rb') as b:
+			    vocab = csv.reader(b)
+			    vocab_list.extend(vocab)
+
+			# data to override in the format {line_num_to_override:data_to_write}. 
+			line_to_override = {indexOfEdit:[date, entry, definition] }
+
+			# Write data to the csv file and replace the lines in the line_to_override dict.
+			with open('data.csv', 'wb') as b:
+			    writer = csv.writer(b)
+			    for line, row in enumerate(vocab_list):
+			         data = line_to_override.get(line, row)
+			         writer.writerow(data)
+
+		editVocab()
+		src ="audio/"+originalName+".wav"
+		dst = "audio/"+entry+".wav"
+		os.rename(src,dst)
