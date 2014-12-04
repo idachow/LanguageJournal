@@ -65,10 +65,8 @@ class LanguageJournal(EventBasedAnimationClass):
 		x,y = event.x_root, event.y_root
 		cx, cy = self.cx, self.cy
 		height,width = self.height,self.width
-		# print x,y, 
 		backcoord = self.height/20
 		if self.currentWindow == 0:
-			print "a"
 			if (self.cx+10 <= x <= self.cx+110) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 1
 				self.window.screen_newVocab() 
@@ -78,7 +76,6 @@ class LanguageJournal(EventBasedAnimationClass):
 				self.window.screen_viewVocab()
 
 		elif (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
-			print "b"
 			if self.currentWindow == 1:
 				self.window.frame_entryvocab.destroy()
 				self.window.frame_entrydefinition.destroy()
@@ -90,30 +87,33 @@ class LanguageJournal(EventBasedAnimationClass):
 				# if self.window.lb.curselection() != ():
 				# self.window.b5.destroy()
 				if self.window.displayEditScreen == True:
-					print "???"
 					# temp cover
-					self.window.frame_editTermSave.destroy()
+					self.frame_editTermSave.destroy()
 					self.window.frame_editTerm.destroy()
+					self.window.frame_editDefSave.destroy()
+					self.window.frame_editDef.destroy()
+					self.window.frame_editAudioSave.destroy()
+					self.window.frame_editAudioReplay.destroy()
+					self.window.frame_editReturn.destroy()
 					self.currentWindow = 2
 					self.window.displayEditScreen = False
 					# self.window.frame_displayeditvoc.destroy()
 					# self.window.frame_displayaudioplay.destroy()
 				if self.window.lb.curselection() != () and self.window.displayEditScreen == False:
-					print "ddd"
 					self.window.frame_displayeditvoc.destroy()
 					self.window.frame_displayaudioplay.destroy()
+
 				# self.window.b6.destroy()
 				# whole frame
-				self.currentWindow = 0
 				self.window.myframe.destroy()
 				self.window.canvasScroller.destroy()
+				self.currentWindow = 0
 		
 		elif self.window.displayEditScreen == True:
 			self.window.frame_displayeditvoc.destroy()
 			self.window.frame_displayaudioplay.destroy()
 		
 		elif self.currentWindow == 2 and self.window.lb.curselection() != ():
-			print "c"
 			self.base()
 			self.window.button_all_back()
 			self.window.screen_viewVocab_displayVocab()

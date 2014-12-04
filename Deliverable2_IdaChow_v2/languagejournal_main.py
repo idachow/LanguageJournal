@@ -12,6 +12,9 @@ import random
 import copy
 import time
 import csv
+import winsound
+import pyaudio
+import sys
 from eventBasedAnimationClass import EventBasedAnimationClass
 
 ### import other class files
@@ -59,11 +62,21 @@ class LanguageJournal(EventBasedAnimationClass):
 			if (self.cx+10 <= x <= self.cx+110) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 1
 				self.window.screen_newVocab()
+				# winsound.Beep(3000, 1000)
 			elif (self.cx-110 <= x <= self.cx-10) and (self.cy-50 <= y <= self.cx+50):
 				self.currentWindow = 2
 				self.window.screen_viewVocab()
 		if self.currentWindow == 1 or self.currentWindow == 2:
-			if (backcoord/20 <= x <= backcoord/20+100) and (backcoord/20 <= y <= backcoord/20+100):
+			if (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
+				if self.currentWindow == 1:
+					self.window.frame_entryvocab.destroy()
+					self.window.frame_entrydefinition.destroy()
+					self.window.frame_entrysave.destroy()
+					self.window.frame_audiosave.destroy()
+					self.window.frame_audioplay.destroy()
+				if self.currentWindow == 2:
+					self.window.canvasScroller.destroy()
+					self.window.myframe.destroy()
 				self.currentWindow = 0
 
 	def redrawAll(self):
@@ -87,9 +100,11 @@ class LanguageJournal(EventBasedAnimationClass):
 		self.root.bind("<Button-1>", lambda event: self.onMousePressed(event))
 		self.window = Window(self.canvas,self.width, self.height,self.cx,self.cy,self.root)
 
+		self.redrawAll()
 
 
-myapp = LanguageJournal(.85*screenWidth,.65*screenHeight)
+
+myapp = LanguageJournal(1*screenWidth,.95*screenHeight)
 
 myapp.run()
 

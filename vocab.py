@@ -44,7 +44,7 @@ class Vocab(object):
 		if self.exist == False:
 			f.write(item)
 
-	def edit(self,entry,indexOfEdit,date,definition,originalName):
+	def editWord(self,entry,indexOfEdit,date,definition,originalName):
 		print "entry: ", entry, "| index of edit: ", indexOfEdit
 
 		def editVocab():
@@ -52,20 +52,50 @@ class Vocab(object):
 
 			# Read all data from the csv file.
 			with open('data.csv', 'rb') as b:
-			    vocab = csv.reader(b)
-			    vocab_list.extend(vocab)
+				vocab = csv.reader(b)
+				vocab_list.extend(vocab)
 
 			# data to override in the format {line_num_to_override:data_to_write}. 
 			line_to_override = {indexOfEdit:[date, entry, definition] }
 
 			# Write data to the csv file and replace the lines in the line_to_override dict.
 			with open('data.csv', 'wb') as b:
-			    writer = csv.writer(b)
-			    for line, row in enumerate(vocab_list):
-			         data = line_to_override.get(line, row)
-			         writer.writerow(data)
+				writer = csv.writer(b)
+				for line, row in enumerate(vocab_list):
+					 data = line_to_override.get(line, row)
+					 writer.writerow(data)
+
+			return
 
 		editVocab()
+
 		src ="audio/"+originalName+".wav"
 		dst = "audio/"+entry+".wav"
 		os.rename(src,dst)
+		print src, dst
+
+
+	def editDef(self,entry,indexOfEdit,date,name):
+		print "entry: ", entry, "| index of edit: ", indexOfEdit
+
+		def editVocab():
+			vocab_list = []
+
+			# Read all data from the csv file.
+			with open('data.csv', 'rb') as b:
+				vocab = csv.reader(b)
+				vocab_list.extend(vocab)
+
+			# data to override in the format {line_num_to_override:data_to_write}. 
+			line_to_override = {indexOfEdit:[date, name, entry] }
+
+			# Write data to the csv file and replace the lines in the line_to_override dict.
+			with open('data.csv', 'wb') as b:
+				writer = csv.writer(b)
+				for line, row in enumerate(vocab_list):
+					 data = line_to_override.get(line, row)
+					 writer.writerow(data)
+
+			return
+
+		editVocab()
