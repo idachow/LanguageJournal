@@ -1,3 +1,12 @@
+TIMESHEET.txt
+-------------------------------
+"Language Journal" 
+Ida Chow
+15-112 Term Project
+-------------------------------
+
+
+
 11/14	-- (2 hrs): Outlining/Diagramming project, charting flow
 11/16	-- (2 hrs): Starting code for base "vocabulary" class
 		-- (2 hrs): Testing and practicing with File I/O
@@ -7,7 +16,7 @@
 		-- (1 hr): Figuring out text input interface
 		-- (2 hr): Switching to CSV instead of saving to sep files
 
-Total	== 15 (W1)
+Total	== 15 (W1) --------------------------------------
 
 11/23	-- (1 hr): Separating classes into separate files (vocab class, window class)
 		-- (2 hr): Developing UI further (separate windows)
@@ -18,43 +27,22 @@ Total	== 15 (W1)
 		-- (3 hrs): Audio addition, exploring multiple audio options / external modules
 11/26 	-- (1 hr): Additional UI debugging 
 
-Total	== 14.5 (W2)
+Total	== 14.5 (W2) --------------------------------------
 
 11/28	-- (3 hr): Changing from grid view to listbox view in order to be able to select vocab to view parameters (definition, etc)
-11/29	-- (1 hr): Debugging UI interface to work with listbox window
+11/29	-- (1.5 hr): Debugging UI interface to work with listbox window
 		-- (2 hr): Audio addition /debugging audio
 11/30	-- (.5 hr): Additional audio debugging on view all page
 12/11	-- (1 hr): Still debugging audio
 		-- (1 hr): Debugging destroying frames
-12/2 	-- (3 hr): Adding edit feature 
+12/2 	-- (3.5 hr): Adding edit feature 
 		-- (2 hr): Allowing for rewrite of .wav files with editing vocab
 		-- (2 hr): Fixing up issues with CSV parsing
 12/3 	-- (4 hr): Fixing up UI of audio addition
-				(2 ): Adding priority feature
-				(2 ): Add weekly reminder after priority
-			(@ midnight): 
-
-Total	== 14.5 (W3)
-
-FULL TOTAL: 29.5 hr ... 45
-
-Goal: 35 by dinner
---- 3 hrs after
-38
-
-Sunday: 7 hrs -- 45
-Monday: 5 hrs 50
-Tuesday: 5 hrs? - 55
-Wednesday: 5 hrs final touches - 60 hrs
+		-- (1 hr): Allowing for entry add w/o initial audio
+		-- (1 hr): Ability to delete vocab
 
 
+Total	== 21.5 (W3) --------------------------------------
 
-
-
-
-
-
-
-
--- UI minimalistic but ok
--- ??? can't access things
+FULL TOTAL: 52 hours

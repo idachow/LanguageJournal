@@ -19,7 +19,6 @@ from eventBasedAnimationClass import EventBasedAnimationClass
 import ctypes
 user32 = ctypes.windll.user32
 screensize = screenWidth, screenHeight = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-print screensize
 
 class Vocab(object):
 	def __init__(self,word,definition,date):
@@ -45,8 +44,9 @@ class Vocab(object):
 			f.write(item)
 
 	def editWord(self,entry,indexOfEdit,date,definition,originalName):
-		print "entry: ", entry, "| index of edit: ", indexOfEdit
 
+		#pulling in originalName only for .wav file rewrite purposes
+		
 		def editVocab():
 			vocab_list = []
 
@@ -69,14 +69,14 @@ class Vocab(object):
 
 		editVocab()
 
+		# replacement of audio so that the .wav 
+		# file still hooks up to the same place
 		src ="audio/"+originalName+".wav"
 		dst = "audio/"+entry+".wav"
 		os.rename(src,dst)
-		print src, dst
 
 
 	def editDef(self,entry,indexOfEdit,date,name):
-		print "entry: ", entry, "| index of edit: ", indexOfEdit
 
 		def editVocab():
 			vocab_list = []

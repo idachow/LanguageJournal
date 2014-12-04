@@ -21,11 +21,10 @@ from eventBasedAnimationClass import EventBasedAnimationClass
 from vocab import Vocab
 from window import Window
 
-## det window size
+## det window size since this is a full screen app
 import ctypes
 user32 = ctypes.windll.user32
 screensize = screenWidth, screenHeight = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-print screensize
 
 
 
@@ -43,40 +42,46 @@ class LanguageJournal(EventBasedAnimationClass):
 		self.mouse = 0
 
 
-
-
 	def Enter(self,event):
-		""" Someone Pressed Enter """
-		print "You entered >> %s" % (self.entrybox.get())
-	
+		pass
+
 	def onMouseMotion(self, event):
 		pass
 
 	def onKeyPressed(self, event):
-		if (event.char == "!"): 
-			filename = "data.csv"
-			# opening the file with w+ mode truncates the file
-			f = open(filename, "w+")
-			f.close()
+		pass
+		# debugging to clear csv
+		# if (event.char == "!"): 
+			# filename = "data.csv"
+			# # opening the file with w+ mode truncates the file
+			#f = open(filename, "w+")
+			# f.close()
 
 	def onMousePressed(self,event):
-		self.mouse += 1
-		print self.mouse
+
 		x,y = event.x_root, event.y_root
 		cx, cy = self.cx, self.cy
 		height,width = self.height,self.width
+
+		# setting proportionate coordinate for back button
 		backcoord = self.height/20
+
 		if self.currentWindow == 0:
+			# HOME SCREEN OPTIONS
 			if (self.cx+10 <= x <= self.cx+110) and (self.cy-50 <= y <= self.cx+50):
+				# CLICKED ON: ADD NEW VOCAB SCREEN
 				self.currentWindow = 1
 				self.window.screen_newVocab() 
-				# winsound.Beep(3000, 1000)
+
 			elif (self.cx-110 <= x <= self.cx-10) and (self.cy-50 <= y <= self.cx+50):
+				# CLICKED ON: VIEW ALL VOCAB
 				self.currentWindow = 2
 				self.window.screen_viewVocab()
 
 		elif (backcoord <= x <= backcoord+100) and (backcoord <= y <= backcoord+100):
+			# BACK BUTTON OPTIONS (WHEN ON DIFFERENT WINDOWS)
 			if self.currentWindow == 1:
+				# IF ON ADD VOCAB PAGE, simply destroy all buttons
 				self.window.frame_entryvocab.destroy()
 				self.window.frame_entrydefinition.destroy()
 				self.window.frame_entrysave.destroy()
@@ -84,18 +89,21 @@ class LanguageJournal(EventBasedAnimationClass):
 				self.window.frame_audioplay.destroy()
 				self.currentWindow = 0
 			elif self.currentWindow == 2:
+				# IF ON VIEW ALL PAGE, check different parameters
 				# if self.window.lb.curselection() != ():
 				# self.window.b5.destroy()
 				if self.window.displayEditScreen == True:
-					# temp cover
-					self.frame_editTermSave.destroy()
+					# if edit screen is open, destroy all edit frames
+					self.window.frame_editTermSave.destroy()
 					self.window.frame_editTerm.destroy()
 					self.window.frame_editDefSave.destroy()
 					self.window.frame_editDef.destroy()
 					self.window.frame_editAudioSave.destroy()
 					self.window.frame_editAudioReplay.destroy()
 					self.window.frame_editReturn.destroy()
+					self.window.frame_editDelete.destroy()
 					self.currentWindow = 2
+					# and then sit edit screen as closed/False
 					self.window.displayEditScreen = False
 					# self.window.frame_displayeditvoc.destroy()
 					# self.window.frame_displayaudioplay.destroy()
@@ -109,11 +117,13 @@ class LanguageJournal(EventBasedAnimationClass):
 				self.window.canvasScroller.destroy()
 				self.currentWindow = 0
 		
-		elif self.window.displayEditScreen == True:
-			self.window.frame_displayeditvoc.destroy()
-			self.window.frame_displayaudioplay.destroy()
+		# elif self.window.displayEditScreen == True:
+		# 	self.window.frame_displayeditvoc.destroy()
+		# 	self.window.frame_displayaudioplay.destroy()
 		
 		elif self.currentWindow == 2 and self.window.lb.curselection() != ():
+			# IF ON VIEW ALL PAGE, and listbox selection (word selection) isn't empty
+			# display that word!
 			self.base()
 			self.window.button_all_back()
 			self.window.screen_viewVocab_displayVocab()
@@ -121,10 +131,10 @@ class LanguageJournal(EventBasedAnimationClass):
 
 
 		if self.currentWindow == 0:
+			# base screen reload
 			self.base()
 			self.window.screen_start()
 
-		print "currentWindow", self.currentWindow
 
 
 	def base(self):
@@ -149,6 +159,7 @@ class LanguageJournal(EventBasedAnimationClass):
 
 	def initAnimation(self):
 
+		# binding onMousePressed to button-1
 		self.canvas.bind("<Button-1>", lambda event: self.onMousePressed(event))
 		self.window = Window(self.canvas,self.width, self.height,self.cx,self.cy,self.root)
 
@@ -159,12 +170,3 @@ class LanguageJournal(EventBasedAnimationClass):
 myapp = LanguageJournal(1*screenWidth,.95*screenHeight)
 
 myapp.run()
-
-
-
-############ mp3 testing 
-
-# import winsound
-
-# winsound.Beep(3000, 1000)
-# winsound.PlaySound('ocean_nobirds.mp3', winsound.SND_FILENAME)
