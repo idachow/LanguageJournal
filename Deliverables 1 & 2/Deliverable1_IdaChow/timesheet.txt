@@ -1,0 +1,10 @@
+11/14	-- (2 hrs): Outlining/Diagramming project, charting flow
+11/16	-- (2 hrs): Starting code for base "vocabulary" class
+		-- (2 hrs): Testing and practicing with File I/O
+11/17	-- (1 hr): Starting the competitive analysis
+11/18	-- (3 hrs): Finishing competitive analysis/project proposal
+11/19	-- (2 hrs): Working on code for Tkinter interface
+		-- (1 hr): Figuring out text input interface
+		-- (1 hr): Switching to CSV instead of saving to sep files
+
+Total	== 14
